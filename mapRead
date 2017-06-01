@@ -1,0 +1,9 @@
+#include <stdio.h>#include <stdlib.h>void readMap();void printMap(int n);void saveMap();char map[5][30][30];int main(){    char name[10],temp;    int num;
+    readMap();    //printf("이름을 입력하세요:");    printf("맵:");    scanf("%d",&num);    printMap(num);
+    saveMap();}
+void readMap(){    int i=-1,j=0,k=0;    FILE *fp;    char temp;
+    fp = fopen("map","r");    while(1){        if(fscanf(fp,"%c", &temp) == EOF)break;        if(temp == '\n'){            j++;            k=0;        }        if(temp =='m'||temp =='e'){            i++;            j=0;            k=0;        }
+        map[i][j][k] = temp;        k++;    }    fclose(fp);}
+void printMap(int n){    int i,j;    for(i=0;i<30;i++)        for(j=0;j<30;j++)          printf("%c",map[n-1][i][j]);}
+
+void saveMap(){    int i=-1,j=0,k=0;    FILE *fp;    fp = fopen("sokoban","w");    while(){                if(map[i][j][k] == 'd') break;                if(map[i][j][k] == 'm' || map[i][j][k] == 'e'){                    i++;                    j=0;                    k=0;                }                if(map[i][j][k] == '\n'){                    j++;                    k=0;                }               fprintf(fp,"%c",map[i][j][k]);               k++;            }    fclose(fp);}

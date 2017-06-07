@@ -1,0 +1,1103 @@
+
+
+#include<stdio.h>
+
+#include<time.h>//score옜?옜?옜?
+
+#include<stdlib.h>
+
+#include<termio.h>
+
+#define
+K 5
+
+#define
+N 14
+
+#define
+M 30
+
+int
+ud_max = 5;
+
+int
+ud_mp[5][N][M];
+
+int
+ud_count = 0;
+
+char
+mp[K][N][M],c,name[10],ud[5][N][M];//mp옜?map옜?옜 옜?옜?옜옜?옜 옜?name옜?옜?옜 옜 옜?
+
+char
+ospot[K][N][M]; //옜 옜?옜옜 옜?옜?옜?옜옜 ud?undo옜
+옜?옜옜?옜?옜?옜?
+
+int
+i,j,k,s,x,a,b=0,q,box,place,stage_num;//i,j,k?옜?옜?옜?옜?옜옜 x?getch()옜?옜옜 옜 옜?옜
+옜?
+
+//a?b?undo옜
+옜옜 옜?옜?옜?
+
+//box?place?옜옜
+옜?옜?옜 옜옜 옜?옜옜
+
+clock_t
+start,save,end,stage[5];//start?main옜옜 옜 옜?옜 옜옜 옜옜,save?옜?옜 옜,end?stage?옜?옜 옜옜 옜옜옜
+
+ 
+
+void
+undo_init(int stage){
+
+           int w,x,y;
+
+           for(y=0;y<N;y++)
+
+                     for(x=0;x<M;x++)
+
+                                for(w=0;w<ud_max;w++)
+
+                                          ud_mp[w][y][x]
+= mp[stage][y][x];
+
+           ud_count = 0;
+
+}
+
+ 
+
+void
+undo_logging(){
+
+           int w, x, y;
+
+ 
+
+           for(w = ud_max-2; w>=0; w--){
+
+                     for(y=0;y<N; y++)
+
+                                for(x=0;x<M;x++)
+
+                                          ud_mp[w+1][y][x]
+= ud_mp[w][y][x];
+
+           }
+
+ 
+
+           for(w=0;w<ud_max-1;w++)
+
+           {
+
+                     for(y=0;y<N;y++)
+
+                                for(x=0;x<M;x++)
+
+                                          ud_mp[0][y][x]
+= mp[s][y][x];
+
+           }
+
+ 
+
+           if(ud_count<ud_max)
+
+                     ud_count++;
+
+}
+
+ 
+
+void
+undo_delogging(){
+
+           int w,x,y;
+
+ 
+
+           if(ud_count>0)
+
+           {
+
+                     for(y=0;y<N;y++)
+
+                                for(x=0;x<M;x++)
+
+                                          mp[s][y][x]
+= ud_mp[0][y][x];
+
+ 
+
+                     for(w=0;w<ud_max-1;w++){
+
+                                for(y=0;y<N;y++)
+
+                                          for(x=0;x<M;x++)
+
+                                                     ud_mp[w][y][x]
+= ud_mp[w+1][y][x];
+
+ 
+
+                     }
+
+ 
+
+                     for(y=0;y<N;y++)
+
+                                for(x=0;x<M;x++)
+
+                                          ud_mp[ud_max-1][y][x]
+= 0;
+
+                     ud_count--;
+
+ 
+
+                     }
+
+           }
+
+void
+scan_map(){
+
+            FILE *re;
+
+              
+re=fopen("map.txt","r");//map옜?옜 옜옜 옜?
+
+                       //옜 옜?옜 옜?map.txt옜?옜 옜?옜
+옜 옜?옜 map.txt옜?옜
+옜?옜?옜 옜 옜
+
+                       for(i=0;i<5;i++){
+
+                                    for(j=0;j<N;j++){
+
+                                                       for(k=0;k<M;k++){
+
+                                                                     
+fscanf(re,"%c",&mp[i][j][k]);//for옜 옜옜 옜?옜옜
+
+                                                                                if(mp[i][j][k]=='\n')//옜?옜옜?옜?옜옜 옜?j?옜옜?옜?2옜 옜?옜?
+
+                                                                                                       break;
+
+                                                                                           else if(mp[i][j][k]=='O')
+
+                                                                                                                ospot[i][j][k]='O';
+
+                                                       }
+
+                                                         if(mp[i][j][k]=='m')
+
+                                                                            break;
+
+                                                                  }
+
+                                            if(mp[i][j][k]=='d')
+
+                                                         break;
+
+                                              }
+
+}
+
+void
+error_map(int stage){
+
+            
+for(i=stage;i<stage+1;i++)
+
+                         for(j=0;j<N;j++)
+
+                                            for(k=0;k<M;k++){
+
+                                                           if(mp[i][j][k]=='$')// 옜옜 옜 옜?옜 옜옜?box옜 옜?옜
+옜옜?옜?옜옜?옜?옜 옜옜
+
+                                                                                box++;
+
+                                                                      else if(mp[i][j][k]=='O')//옜옜 옜 옜 옜?옜 옜옜 place옜 옜 옜?옜
+옜옜?옜?옜옜?옜?옜 옜옜
+
+                                                                                           place++;
+
+                                                                              }
+
+              
+if(box!=place){
+
+                                    printf("?옜?옜옜
+옜옜");//옜 옜?옜 옜?옜 옜 옜?옜옜 옜옜 옜?옜?옜옜?옜옜?옜옜
+
+                                            exit(1);
+
+                     }
+
+}
+
+ 
+
+int
+getch(){// 옜?옜옜 옜?옜옜 옜?옜옜 옜 옜?옜 옜 옜옜?옜?옜?옜옜?
+
+           int ch;
+
+           struct termios buf;
+
+           struct termios save;
+
+ 
+
+           tcgetattr(0,&save);
+
+           buf=save;
+
+ 
+
+           buf.c_lflag&=~(ICANON|ECHO);
+
+           buf.c_cc[VMIN]=1;
+
+           buf.c_cc[VTIME]=0;
+
+ 
+
+           tcsetattr(0,TCSAFLUSH,&buf);
+
+           ch=getchar();
+
+           tcsetattr(0,TCSAFLUSH,&save);
+
+ 
+
+           return ch;
+
+}
+
+void
+print_map(int stage){//옜 옜옜?옜
+
+            
+printf("Hello ");
+
+              
+for(i=0;i<M;i++){
+
+                                  printf("%c",name[i]);//옜옜 옜?옜옜?옜?옜옜 옜?
+
+                                    if(name[i]=='\n')
+
+                                                       break;
+
+                     }
+
+                       printf("\n");
+
+                       for(i=stage;i<stage+1;i++){
+
+                                  for(j=1;j<N;j++){
+
+                                            for(k=0;k<M;k++){
+
+                                                         printf("%c",mp[i][j][k]);//옜
+옜?옜옜?옜?옜옜
+옜?
+
+                                                                  if(mp[i][j][k]=='\n')
+
+                                                                                break;
+
+                                            }
+
+                                            if(mp[i][j][k]=='m')
+
+                                                       break;
+
+                                  }
+
+                                  if(mp[i][j][k]=='d')
+
+                                            break;
+
+                       }
+
+                       printf("\n");
+
+                       printf("(command)");
+
+}
+
+void
+save_map(int stage){//옜 옜?옜옜 옜
+
+            
+FILE *sk;
+
+              
+sk=fopen("sokoban","a+");//옜?옜?옜옜 옜?옜cat
+
+                       fprintf(sk,"\n");
+
+                         for(i=0;i<M;i++){
+
+                                            fprintf(sk,"%c",name[i]);//옜?옜?옜?옜옜
+
+                                              if(name[i]=='\n')//enter옜 옜?옜옜 옜옜 옜옜?옜
+
+                                                                  break;
+
+                                                       }
+
+                                  for(i=stage;i<stage+1;i++){
+
+                                              for(j=1;j<N;j++){
+
+                                                                  for(k=0;k<M;k++){
+
+                                                                                fprintf(sk,"%c",mp[i][j][k]);//옜?옜?옜?sokoban옜?옜옜
+
+                                                                                           if(mp[i][j][k]=='\n')
+
+                                                                                                                  break;
+
+                                                                                                   }
+
+                                                                    if(mp[i][j][k]=='m')
+
+                                                                                       break;
+
+                                                                            }
+
+                                                       if(mp[i][j][k]=='d')
+
+                                                                    break;
+
+                                                         }
+
+                                    fclose(sk);
+
+}
+
+ 
+
+void
+move_map(char x){
+
+           if(x=='h'){
+
+                       for(j=0;j<N;j++)
+
+                                    for(k=0;k<M;k++)
+
+                                                       if(mp[s][j][k]=='@'){ //옜옜 옜?옜 옜?옜?옜
+
+                                                                    if(mp[s][j][k-1]=='
+'&&ospot[s][j][k]!='O'){//옜?옜?옜옜 옜옜 옜 옜?옜옜옜 옜?옜옜
+옜옜 옜
+
+                                                                                       mp[s][j][k]=' ';
+
+                                                                                         mp[s][j][k-1]='@';
+
+                                                                                                 }
+
+                                                                           else
+if(mp[s][j][k-1]=='$'&&mp[s][j][k-2]=='$'){//옜?옜?옜?옜 ?옜??옜?옜?옜?옜?옜
+
+                                                                                         mp[s][j][k]='@';
+
+                                                                                                 mp[s][j][k-1]='$';
+
+                                                                                                   mp[s][j][k-2]='$';
+
+                                                                            }
+
+                                                                              else
+if(ospot[s][j][k]!='O'&&mp[s][j][k-1]=='$'&&(mp[s][j][k-2]=='
+'||mp[s][j][k-2]=='O')){
+
+                                                                                                   //옜?옜?옜?옜 ?옜?옜 옜옜 옜옜 옜?옜옜 옜
+
+                                                                                                 mp[s][j][k]=' ';
+
+                                                                                                   mp[s][j][k-1]='@';
+
+                                                                                                            mp[s][j][k-2]='$';
+
+                                                                                                              }
+
+                                                                                       else
+if(ospot[s][j][k]=='O'&&mp[s][j][k-1]=='$'&&mp[s][j][k-2]=='O'){
+
+                                                                                                     //옜 옜?옜?옜 옜옜 ?옜?옜?옜?옜?옜 옜옜?
+
+                                                                                                     mp[s][j][k]='O';//옜 옜?옜
+
+                                                                                                                mp[s][j][k-1]='@';//옜?옜
+
+                                                                                                                           mp[s][j][k-2]='$';//옜 옜
+
+                                                                                                                                   }
+
+                                                                                         else
+if(ospot[s][j][k]=='O'&&(mp[s][j][k-1]==' '||mp[s][j][k-1]=='O')){//옜
+옜옜 옜?옜?옜?옜
+옜옜 옜옜 옜 옜옜
+
+                                                                                                              //옜 옜?옜?옜 옜?옜옜 ?
+
+                                                                                                            mp[s][j][k]='O';
+
+                                                                                                              mp[s][j][k-1]='@';
+
+                                                                                               }
+
+                                                                          else
+if(ospot[s][j][k]=='O'&&mp[s][j][k-1]==' '){
+
+                                                                                       //옜 옜?옜?옜?옜?옜 옜옜 옜옜 ?옜?옜옜 옜옜 옜옜 옜 옜 옜?옜옜
+
+                                                                                      mp[s][j][k]='O';
+
+                                                                                       mp[s][j][k-1]='@';
+
+                                                                                        }
+
+                                                                           else if(mp[s][j][k-1]=='O'){//옜?옜 옜 옜 옜옜
+
+                                                                                         mp[s][j][k]=' ';
+
+                                                                                                  mp[s][j][k-1]='@';//옜?옜
+
+                                                                                                   }
+
+                                                                            system("clear");
+
+                                                                             print_map(s);
+
+                                                                               }
+
+                           }
+
+           else if(x=='k'){//옜?옜옜 옜 옜?옜?옜?옜?옜옜 옜?옜?
+
+                         for(j=0;j<N;j++)
+
+                                              for(k=0;k<M;k++)
+
+                                                                    if(mp[s][j][k]=='@'){
+
+                                                                                         if(mp[s][j-1][k]=='
+'&&ospot[s][j][k]!='O'){
+
+                                                                                                              mp[s][j][k]=' ';
+
+                                                                                                                         mp[s][j-1][k]='@';
+
+                                                                                                                                   }
+
+                                                                                                   else if(mp[s][j-1][k]=='$'&&mp[s][j-2][k]=='$'){
+
+                                                                                                                         mp[s][j][k]='@';
+
+                                                                                                                                   mp[s][j-1][k]='$';
+
+                                                                                                                                              mp[s][j-2][k]='$';
+
+                                                                                                                                                        
+}
+
+                                                                                                              else
+if(ospot[s][j][k]!='O'&&mp[s][j-1][k]=='$'&&(mp[s][j-2][k]=='
+'||mp[s][j-2][k]=='O')){
+
+                                                                                                                                   mp[s][j][k]=' ';
+
+                                                                                                                                              mp[s][j-1][k]='@';
+
+                                                                                                                                                        mp[s][j-2][k]='$';
+
+                                                                                                                                                                  
+}
+
+                                                                                                                         else
+if(ospot[s][j][k]=='O'&&mp[s][j-1][k]=='$'&&mp[s][j-2][k]=='O'){
+
+                                                                                                                                                mp[s][j][k]='O';
+
+                                                                                                                                                            mp[s][j-1][k]='@';
+
+                                                                                                                                                                               mp[s][j-2][k]='$';
+
+                                                                                                                                                                                          }
+
+                                                                                                                                   else
+if(ospot[s][j][k]=='O'&&(mp[s][j-1][k]==' '||mp[s][j-1][k]=='O')){
+
+                                                                                                                                                        mp[s][j][k]='O';
+
+                                                                                                                                                                  
+mp[s][j-1][k]='@';
+
+                                                                                                                                                                             }
+
+                                                                                                                                              else
+if(ospot[s][j][k]=='O'&&mp[s][j-1][k]==' '){
+
+                                                                                                                                                                   
+mp[s][j][k]='O';
+
+                                                                                                                                                                               mp[s][j-1][k]='@';
+
+                                                                                                                                                                                           }
+
+                                                                                                                                                         else if(mp[s][j-1][k]=='O'){
+
+                                                                                                                                                                                  mp[s][j][k]=' ';
+
+                                                                                                                                                                                                     mp[s][j-1][k]='@';
+
+                                                                                                                                                                                                                 }
+
+                                                                                                                                                                   
+system("clear");
+
+                                                                                                                                                                              print_map(s);
+
+                                                                                                                                                                                         }
+
+                                  }
+
+ 
+
+           else if(x=='l'){//옜옜?옜?
+
+                         for(j=0;j<N;j++)
+
+                                            for(k=0;k<M;k++)
+
+                                                         if(mp[s][j][k]=='@'){
+
+                                                                            if(mp[s][j][k+1]=='
+'&&ospot[s][j][k]!='O'){
+
+                                                                                         mp[s][j][k]=' ';
+
+                                                                                                 mp[s][j][k+1]='@';
+
+                                                                                                   }
+
+                                                                              else
+if(ospot[s][j][k]!='O'&&mp[s][j][k+1]=='$'&&(mp[s][j][k+2]=='
+'||mp[s][j][k+2]=='O')){
+
+                                                                                                 mp[s][j][k]=' ';
+
+                                                                                                   mp[s][j][k+1]='@';
+
+                                                                                                            mp[s][j][k+2]='$';
+
+                                                                                                              }
+
+                                                                                       else if(mp[s][j][k+1]=='$'&&mp[s][j][k+2]=='$'){
+
+                                                                                                   mp[s][j][k]='@';
+
+                                                                                                            mp[s][j][k+1]='$';
+
+                                                                                                              mp[s][j][k+2]='$';
+
+                                                                                                                       }
+
+                                                                                         else
+if(ospot[s][j][k]=='O'&&mp[s][j][k+1]=='$'&&mp[s][j][k+2]=='O'){
+
+                                                                                                              mp[s][j][k]='O';
+
+                                                                                                                         mp[s][j][k+1]='@';
+
+                                                                                                                                   mp[s][j][k+2]='$';
+
+                                                                                                                                            }
+
+                                                                                                 else
+if(ospot[s][j][k]=='O'&&(mp[s][j][k+1]==' '||mp[s][j][k+1]=='O')){
+
+                                                                                                              mp[s][j][k]='O';
+
+                                                                                                                       mp[s][j][k+1]='@';
+
+                                                                                                                         }
+
+                                                                                                   else if(ospot[s][j][k]=='O'&&mp[s][j][k+1]=='
+'){
+
+                                                                                                                        mp[s][j][k]='O';
+
+                                                                                                                           mp[s][j][k+1]='@';
+
+                                                                                                                                    }
+
+                                                                                                             else if(mp[s][j][k+1]=='O'){
+
+                                                                                                                             mp[s][j][k]=' ';
+
+                                                                                                                                               mp[s][j][k+1]='@';
+
+                                                                                                                                                        
+}
+
+                                                                                                               system("clear");
+
+                                                                                                                        print_map(s);
+
+                                                                                                                          }
+
+           }
+
+           else if(x=='j'){//옜옜?
+
+                     for(j=0;j<N;j++)
+
+                                for(k=0;k<M;k++)
+
+                                                                    if(mp[s][j][k]=='@'){
+
+                                                                                         if(mp[s][j+1][k]=='
+'&&ospot[s][j][k]!='O'){
+
+                                                                                                              mp[s][j][k]=' ';
+
+                                                                                                                         mp[s][j+1][k]='@';
+
+                                                                                                                                   }
+
+                                                                                                   else
+if(mp[s][j+1][k]=='$'&&mp[s][j+2][k]=='$'){
+
+                                                                                                                         mp[s][j][k]='@';
+
+                                                                                                                                   mp[s][j+1][k]='$';
+
+                                                                                                                                              mp[s][j+2][k]='$';
+
+                                                                                                                                                        
+}
+
+                                                                                                              else
+if(ospot[s][j][k]!='O'&&mp[s][j+1][k]=='$'&&(mp[s][j+2][k]=='
+'||mp[s][j+2][k]=='O')){
+
+                                                                                                                                   mp[s][j][k]=' ';
+
+                                                                                                                                              mp[s][j+1][k]='@';
+
+                                                                                                                                                        mp[s][j+2][k]='$';
+
+                                                                                                                                                                  
+}
+
+                                                                                                                         else
+if(ospot[s][j][k]=='O'&&mp[s][j+1][k]=='$'&&mp[s][j+2][k]=='O'){
+
+                                                                                                                                                mp[s][j][k]='O';
+
+                                                                                                                                                            mp[s][j+1][k]='@';
+
+                                                                                                                                                                               mp[s][j+2][k]='$';
+
+                                                                                                                                                                                          }
+
+                                                                                                                                   else if(ospot[s][j][k]=='O'&&(mp[s][j+1][k]=='
+'||mp[s][j+1][k]=='O')){
+
+                                                                                                                                                        mp[s][j][k]='O';
+
+                                                                                                                                                                  
+mp[s][j+1][k]='@';
+
+                                                                                                                                                                           }
+
+                                                                                                                                            else
+if(ospot[s][j][k]=='O'&&mp[s][j+1][k]==' '){
+
+                                                                                                                                                         mp[s][j][k]='O';
+
+                                                                                                                                                                  
+mp[s][j+1][k]='@';
+
+                                                                                                                                                                            }
+
+                                                                                                                                               else if(mp[s][j+1][k]=='O'){
+
+                                                                                                                                                                    
+mp[s][j][k]=' ';
+
+                                                                                                                                                                                mp[s][j+1][k]='@';
+
+                                                                                                                                                                                          }
+
+                                                                                                                                                       system("clear");
+
+                                                                                                                                                          print_map(s);
+
+                                                                                                                                                                   
+}
+
+           }
+
+}
+
+void
+jump_stage(){
+
+            
+a=0;//옜?옜?옜 옜?옜?'$'?옜?옜 옜?옜옜 옜?옜옜 'O'옜
+옜 a옜 옜?옜옜?
+
+              
+//a?5?옜 6옜 옜??옜옜 옜옜,옜?옜 옜 옜옜?옜옜 옜
+옜
+
+            
+for(j=1;j<N;j++)
+
+                       for(k=0;k<M;k++){
+
+                                 
+if(mp[s][j][k]=='$'&&ospot[s][j][k]=='O')
+
+                                            a++;
+
+                                  if(s==0&&a==6){
+
+                                            s++;
+
+                                            system("clear");
+
+                                            print_map(s);
+
+                                            start=clock();
+
+                                            undo_init(s);
+
+                                  }
+
+                                  else if(s==1&&a==10){
+
+                                              s++;
+
+                                                       system("clear");
+
+                                                         print_map(s);
+
+                                                                  start=clock();
+
+                                                     undo_init(s);
+
+                                  }
+
+                                  else if(s==2&&a==11){
+
+                                              s++;
+
+                                                       system("clear");
+
+                                                         print_map(s);
+
+                                                                  start=clock();
+
+                                                     undo_init(s);
+
+                                  }
+
+                                  else if(s==3&&a==20){
+
+                                              s++;
+
+                                                       system("clear");
+
+                                                         print_map(s);
+
+                                                                  start=clock();
+
+                                                     undo_init(s);
+
+                                  }
+
+                                  else if(s==4&&a==12){
+
+                                              s++;
+
+                                                       system("clear");
+
+                                                         print_map(s);
+
+                                                                  start=clock();
+
+                                                     undo_init(s);
+
+                                  }
+
+                                  else if(s==5){
+
+                                              system("clear");
+
+                                                       printf("\n\n\n\n\n  C O N G R A T U A T E F O R C L E A R ! ! !
+!\n\n\n\n\n\n");
+
+                                                         exit(1);
+
+                                  }
+
+                       }
+
+}
+
+ 
+
+int
+main(){
+
+            
+//옜 옜 5옜 옜옜 옜옜 5옜
+옜?옜옜옜 옜 옜옜 옜?옜 옜 옜옜 옜?옜 옜 옜옜 옜옜 ?
+
+            
+//load옜?옜 옜?옜?옜 옜?옜 ?옜 옜 ?옜
+
+            //sokoban옜?옜옜?옜옜 옜?옜옜 옜
+
+            FILE *sk;
+
+            
+sk=fopen("sokoban","w");//옜?옜?옜옜 옜?옜
+
+            
+system("clear");
+
+            
+printf("Start.....\n");//옜옜?옜 옜?
+
+            
+printf("Input name: ");//옜?옜옜?옜옜
+
+            
+for(i=0;i<10;i++){
+
+                       scanf("%c",&name[i]);//옜?옜옜 옜옜 옜 10옜 옜 옜 옜옜옜
+
+                       if(name[i]=='\n')
+
+                                  break;
+
+            
+}
+
+             system("clear");
+
+              
+scan_map();//?옜옜 옜 옜 옜??
+
+                       error_map(s);//?옜?옜?옜?옜옜
+
+                         print_map(s);//옜?옜?옜 옜옜
+
+                                  start=clock();
+
+                                            undo_init(s);
+
+                                  while(1){
+
+                                              jump_stage();//옜 옜?옜
+옜?옜옜 옜 옜옜?옜옜 옜 옜옜 옜옜
+
+                                                     x=
+getch();
+
+                                                     if(x=='d'){//sokoban옜?옜옜 옜?
+
+                                                                  system("clear");
+
+                                                                    printf("Hello ");
+
+                                                                            for(i=0;i<M;i++){
+
+                                                                                         printf("%c",name[i]);
+
+                                                                                                 if(name[i]=='\n')
+
+                                                                                                              break;
+
+                                                                            }
+
+                                                                              printf("\n\n");
+
+                                                                                       printf("h(옜),j(옜),k(?,l(옜?\n");
+
+                                                                                        
+printf("u(undo)\nr(replay)\nn(new)\ne(exit)\ns(save)\nf(fileload)\n");
+
+                                                                                                 printf("d(display
+help)\nt(top)\n\n\n(Command)%c",x);
+
+                                                     }
+
+                                                     else
+if(x=='s'){//옜?옜?옜?
+
+                                                                  save=clock();
+
+                                                                    sk=fopen("sokoban","w");
+
+                                                                            fprintf(sk,"map%d",s+1);//?옜
+옜옜 옜?옜옜
+
+                                                                             
+fprintf(sk,"\n%.2fsec",(double)(save-start)/CLOCKS_PER_SEC);//옜옜옜
+옜?옜?
+
+                                                                                       fclose(sk);
+
+                                                                                         save_map(s);
+
+                                                                                                 system("clear");
+
+                                                                                                   print_map(s);
+
+                                                                                                            printf("%c",x);//s????옜옜?
+
+                                                     }
+
+                                                     else
+if(x=='e'){//옜?옜옜?옜?
+
+                                                                  end=clock();
+
+                                                                   
+sk=fopen("sokoban","w");
+
+                                                                            fprintf(sk,"map%d",s+1);//save?옜옜??옜 옜옜 옜옜?
+
+                                                                             
+fprintf(sk,"\n%.2fsec",(double)(end-start)/CLOCKS_PER_SEC);//옜옜옜
+옜?옜?
+
+                                                                                       fclose(sk);
+
+                                                                                         save_map(s);
+
+                                                                                                 system("clear");
+
+                                                                                                   printf("\n\n S E E  Y O U 
+");
+
+                                                                                                            for(i=0;i<M;i++){//옜?옜?옜옜?
+
+                                                                                                                         printf("%c ",name[i]);
+
+                                                                                                                                 if(name[i+1]=='\n'){
+
+                                                                                                                                                printf(".....");
+
+                                                                                                                                                        break;
+
+                                                                                                                                 }
+
+                                                                                                            }
+
+                                                                                                              printf("\n\n\n(Command) %c",x);
+
+                                                                                                                        exit(1);//옜옜 옜옜?옜?
+
+                                                     }
+
+                                                     else
+if(x=='h'||x=='j'||x=='k'||x=='l'){
+
+                                                                undo_logging();
+
+                                                                move_map(x);
+
+                                                                    jump_stage(s);
+
+                                                     }
+
+                                                     else
+if(x=='n'){//n?옜옜?옜 옜?옜옜
+옜 옜옜?stage?옜?옜?옜
+
+                                                                  //s=0옜 옜옜?옜?옜 옜 옜?옜 옜?옜옜?옜 옜 옜?옜?옜?옜?
+
+                                                                  //옜?옜 옜 옜?1옜 옜?옜 옜옜??
+
+                                                                  system("clear");//옜?옜?옜???옜옜?
+
+                                                                    scan_map();//옜 옜옜?옜
+옜
+
+                                                                            s=0;//옜옜?옜옜?
+
+                                                                              start=0;
+
+                                                                                       print_map(s);//옜 옜?
+
+                                                     }
+
+                                                     else
+if(x=='u'){//undo?옜옜 옜?옜옜?옜
+옜 옜?옜?
+
+                          undo_delogging();
+
+                                                                  system("clear");
+
+                                                                 print_map(s);
+
+                                                     }
+
+                                                     else
+if(x=='r'){//r?옜?옜 옜옜 옜 옜 옜옜 옜옜 옜?옜?옜옜 옜?
+
+                                                                  //stage?옜옜 s옜 옜?옜?옜 옜?옜옜?옜 옜 옜?옜 stage?옜옜
+옜 옜 옜옜 옜?옜 옜옜?
+
+                                                                  system("clear");//옜옜 옜?옜?옜???옜옜?
+
+                                                                    printf("\n\n\n\n\n 옜 옜옜옜 옜 옜");
+
+                                                                            system("clear");
+
+                                                                              scan_map();//옜 ?옜옜
+옜 옜?
+
+                                                                                       print_map(s);//stage?옜 옜 옜옜?
+
+                                                     }
+
+                                                     else
+if(x=='p'){
+
+                                                                  s++;
+
+                                                                    system("clear");
+
+                                                                            print_map(s);
+
+                                                     }
+
+                                  }
+
+}
+
+ 
+
+ 
+
+ 
+

@@ -89,7 +89,6 @@ int main(){
 				fputs(map[i][m1], ofp2);
 				m1++;
 			}
-			printf("불러온 플레이어 상태 이후 저장 중\n");
 			i++;
 			while (1){
 				fscanf(ifp, "%s\n", &name[i]);

@@ -158,7 +158,7 @@ int main(){
 		printf("이름은 : %s\n", name[ty]);
 		printf("시간은 : %d\n", time[ty]);
 		m1 -= count;
-		while(1){
+		while(1){ 
 			k = strncmp(map[ty][m1], "end", 3);
 			printf("%s", map[ty][m1]);
 			if (k==0)

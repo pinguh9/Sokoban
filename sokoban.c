@@ -149,26 +149,23 @@ printf("(command)");
 void save_map(int stage,double timer){//맵을 배열에 저장하는 함수
   FILE *sk;
   sk=fopen("sokoban","w");//소코반 파일을 덮어쓰기 위해서 열음
-  fprintf(sk,"map%d",s+1);//몇 번째 맵인지를 파일에 저장시킴
-  fprintf(sk,"\n%.2fsec\n",(double)(timer-start)/CLOCKS_PER_SEC);//저장되어있는 점수를 기록함
-  for(i=0;i<M;i++){
-  fprintf(sk,"%c",name[i]);//이름을 소코반 파일에 저장시킴
-  if(name[i]=='\n')//enter값을 받으면 반복문을 탈출하고 이름저장을 멈춤
-  break;
-  }
-  for(i=stage;i<stage+1;i++){
-  for(j=1;j<N;j++){
-  for(k=0;k<M;k++){
-    fprintf(sk,"%c",mp[i][j][k]);//저장된 배열의 내용을 sokoban파일에 저장시킴
-    if(mp[i][j][k]=='\n')
-      break;
-  }
-  if(mp[i][j][k]=='m')
-  break;
-  }
-  if(mp[i][j][k]=='d')
-  break;
-  }
+fprintf(sk,"\n%.2fsec\n",(double)(timer-start)/CLOCKS_PER_SEC);//저장되어있는 점수를 기록함  
+	fprintf(sk,"map%d",s+1);//몇 번째 맵인지를 파일에 저장시킴  
+	fprintf(sk,"\n");  
+	for(i=stage;i<stage+1;i++){  
+		for(j=1;j<N;j++){  
+			for(k=0;k<M;k++){    
+				fprintf(sk,"%c",mp[i][j][k]);//저장된 배열의 내용을 sokoban파일에 저장시킴    
+				if(mp[i][j][k]=='\n')      
+					break;  
+			}  
+			if(mp[i][j][k]=='m')  
+				break;  
+		}  
+		if(mp[i][j][k]=='d')  
+			break;  
+	}  
+	fprintf(sk,"\nend"); 
   fclose(sk);
 }
 void move_map(char x){

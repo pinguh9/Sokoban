@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include<time.h>//score기록을 위해서 사용함
+#include<time.h>//score기록을 위해서 사용함.
 #include<stdlib.h>
 #include<termio.h>
 #define K 5
@@ -8,10 +8,10 @@
 int ud_max = 5;
 int ud_mp[5][N][M];
 int ud_count = 0;
-char mp[K][N][M],c,name[10];//mp배열을 map파일로 부터 내용을 읽어서 저장시키기 위한 배열임 name배열은 이름을 받기 위한 배열임
-char ospot[K][N][M]; //상자 위치를 저장하기 위해서 새로운 배열을 저장시킴 ud는 undo에서 내용을 저장시키기 위해서 사용한 배열임
+char mp[K][N][M],c,name[10];//mp배열을 map파일로 부터 내용을 읽어서 저장시키기 위한 배열임 name배열은 이름을 받기 위한 배열임.
+char ospot[K][N][M]; //상자 위치를 저장하기 위해서 새로운 배열을 저장시킴 ud는 undo에서 내용을 저장시키기 위해서 사용한 배열임.
 int i,j,k,s,x,check_box,b,q,box,place,box_place[5];//i,j,k는 배열의 저장을 위해서 사용한 변수이고 x는 getch()함수의 입력값을 받기 위해서 사용 되었음
-//box와 place는 파일에서 오류를 점검할 때에 사용하기 위해서 선언했음
+//box와 place는 파일에서 오류를 점검할 때에 사용하기 위해서 선언했음.
 clock_t start,save,end,stage[5];//start는 main함수에서 돌기 시작할 때에 시간으로 생각했고,save는 저장할 때에 시간,end는 stage가 끝났을 때의 시간으로 선언해주었음
 
 void undo_init(int stage){

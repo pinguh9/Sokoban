@@ -449,7 +449,7 @@ else if(x=='n'){//새로운 게임으로 시작하게 하는 버튼임
  new_game();
  printf("%c",x);
 }
-else if(x=='u'){//undo를 가능하게 하려는 함수이지만 아직 오류 부분이 상당함
+else if(x=='u'){// 움직이기 전 상태로 돌아가는 버튼임
  undo_delogging();
  system("clear");
  print_map(s);
